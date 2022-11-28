@@ -13,7 +13,6 @@ public class Main {
             Minion.Arme[] armeAlea = {Minion.Arme.Couteau, Minion.Arme.Pistolet, Minion.Arme.Fusil};
             Minion m = new Minion();
             m.taille = (int) Math.floor(Math.random() * 50 + 150);
-            m.force = Math.random() * 50;
             m.force = Math.floor(Math.random() * 50);
             m.arme = armeAlea[(int) Math.floor(Math.random() * armeAlea.length)];
             m.state = Minion.State.EnForme;
@@ -33,35 +32,40 @@ public class Main {
 
         for (int i = 0; i < nbMinions; i++) {
             tabArme.add(tabP.get(i).arme);
-            //System.out.println(Minion.printArme(tabArme[i]));
         }
 
         for(int i= 0;i<nbMinions;i++){
             tabState.add(tabP.get(i).state);
-        }
-        for(int i= 0;i<nbMinions;i++){
-            tabArme.add(tabP.get(i).arme);
         }
 
         int nbComb = 0;
         double countBlesse = 0;
         double countMort = 0;
         double countFatigue = 0;
+        double countZombie = 0;
 
         while (countMort != (nbMinions - 1)) {
 
-            // On les fait combattre en premier lieu.
-                int r = (int) Math.floor(Math.random() * tabP.size());
-                int r2 = (int) Math.floor(Math.random() * tabP.size());
-                if (r == r2) {
+            //Tirage au sort de deux entiers entre 0 et nbMinions
+                    int r=0;
+                    int r2=0;
+
+                do{
+                    r = (int) Math.floor(Math.random() * tabP.size());
                     r2 = (int) Math.floor(Math.random() * tabP.size());
                 }
-                tabP.get(r).CombatAlea(tabP.get(r2));
+                while(r == r2);
+
+            // On les fait combattre en premier lieu.
+                tabP.get(r).CombatAlea2(tabP.get(r2));
                 nbComb +=1;
                 //On actualise les états des minions.
 
                 tabState.set(r, tabP.get(r).state);
 
+            if (tabState.get(r) == Minion.State.Zombie) {
+                countZombie += 1;
+            }
                 if (tabState.get(r) == Minion.State.Blesse) {
                     countBlesse += 1;
                 }
@@ -75,10 +79,13 @@ public class Main {
                     tabState.remove(r);
 
                 }
-                else {}
 
         }
 
+        int cb=0;
+        for (int i=0;i< cimetiere.size();i++){
+            cb += cimetiere.get(i).nbCombats;
+        }
 
             System.out.println("Nombre total de minions : " + nbMinions);
             /* System.out.println(countFatigue);
@@ -96,16 +103,11 @@ public class Main {
             System.out.println ("   Vie Finale : " + tabP.get(0).vie +"/ " +tabP.get(0).vieInit );
             System.out.println ("   Puissance : " + tabP.get(0).puissance);
             System.out.println ("   Nombre de combats : " + tabP.get(0).nbCombats);
-             System.out.println ("Stats générales : ");
-        int cb=0;
-        for (int i=0;i< cimetiere.size();i++){
-            cb += cimetiere.get(i).nbCombats;
-        }
-        System.out.println ("Nombre de combats total : " + nbComb);
-        System.out.println ("Nombre de combats moyen : " + cb / cimetiere.size());
-        System.out.println ("Puissance moyenne : " + pMoy);
-
-
-
-    }
+            System.out.println("    Zombie : " + (tabP.get(0).zombie ? "OUI" : "NON"));
+            System.out.println ("Stats générales : ");
+            System.out.println ("Nombre de combats total : " + nbComb);
+            System.out.println ("Nombre de combats moyen : " + cb / cimetiere.size());
+            System.out.println ("Puissance moyenne : " + pMoy);
+            System.out.println ("Nombre de zombies : " + countZombie);
+         }
     }
