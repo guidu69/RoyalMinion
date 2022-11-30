@@ -58,53 +58,27 @@ public class Main {
             while (r == r2);
 
             // On les fait combattre en premier lieu.
-            tabP.get(r).CombatAlea2(tabP.get(r2));
+            tabP.get(r).CombatAlea3(tabP.get(r2));
             nbComb += 1;
             //On actualise les états des minions.
 
             tabState.set(r, tabP.get(r).state);
             tabState.set(r2, tabP.get(r2).state);
 
-            //Verif des états des minions :
+            //Verif des états des minions / Envoi au cimetière si nécessaire :
 
-            if(tabState.get(r) == Minion.State.EnForme && tabState.get(r2) == Minion.State.EnForme){
-        }
-            if(tabState.get(r) != Minion.State.EnForme) {
-                if (tabState.get(r) == Minion.State.Mort) {
-                    cimetiere.add(tabP.get(r));
-                    tabP.remove(r);
-                    countMort += 1;
-                } else if (tabState.get(r) == Minion.State.Blesse) {
-                    countBlesse += 1;
-                } else if (tabState.get(r) == Minion.State.Fatigue) {
-                    countFatigue += 1;
-                } else if (tabState.get(r) == Minion.State.Zombie && countZombie < nbMinions / 2) {
-                    countZombie += 1;
-                } else if (tabState.get(r) == Minion.State.Zombie && countZombie >= nbMinions / 2) {
-                    countZombie += 1;
-                    ExitZombie =1;
-                    System.out.println("Victoire des zombies");
-                    break;
-                }
+            if(tabState.get(r) == Minion.State.Mort){
+                cimetiere.add(tabP.get(r));
+                tabP.remove(r);
+                tabState.remove(r);
+              }
+
+            if(tabState.get(r2) == Minion.State.Mort){
+                cimetiere.add(tabP.get(r2));
+                tabP.remove(r2);
+                tabState.remove(r2);
             }
-            else if(tabState.get(r2) != Minion.State.EnForme){
-                if (tabState.get(r2) == Minion.State.Mort) {
-                    cimetiere.add(tabP.get(r2));
-                    tabP.remove(r2);
-                    countMort += 1;
-                } else if (tabState.get(r2) == Minion.State.Blesse) {
-                    countBlesse += 1;
-                } else if (tabState.get(r2) == Minion.State.Fatigue) {
-                    countFatigue += 1;
-                } else if (tabState.get(r2) == Minion.State.Zombie && countZombie < nbMinions / 2) {
-                    countZombie += 1;
-                } else if (tabState.get(r2) == Minion.State.Zombie && countZombie >= nbMinions / 2) {
-                    countZombie += 1;
-                    ExitZombie = 1;
-                    System.out.println("Victoire des zombies");
-                    break;
-                }
-            }
+
         }
 
         if(ExitZombie != 1){
