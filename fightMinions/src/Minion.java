@@ -6,7 +6,7 @@ public class Minion {
     UUID id;
     int taille;
     double force;
-    enum Arme {Couteau, Fusil, Pistolet};
+    enum Arme {Couteau, Fusil, Pistolet}
     int vieInit = (int) Math.floor(Math.random()*500+1000);
     int vie;
     Arme arme;
@@ -24,33 +24,80 @@ public class Minion {
             this.state = State.Mort;
             this.vie =0;
         }
-        else if(1 <= this.vie && this.vie <=50 ){
+        // Seul moyen de devenir zombie au départ
+        else if(this.vie <=10 ){
             this.zombie = true;
             this.state = State.Zombie;
         }
     }
 
+    public static void TourParTour(Minion m1, Minion m2) {
+    int nbT = 0;
+        System.out.println("Vie Minion 1 : " + m1.vie + " Etat : " + m1.state + "   Vie minion 2 :" +  m2.vie + " Etat : " + m2.state);
+        System.out.println("Le minion " + m1.id + " attaque au  " + m1.arme + "  le minion " + m2.id);
+
+            while(m1.state != State.Mort && m2.state != State.Mort && !(m1.state == State.Zombie && m2.state == State.Zombie)){
+                nbT +=1;
+                m1.CombatAlea2(m2);
+                System.out.println("Vie Minion 1 : " + m1.vie + " Etat : " + m1.state + "   Vie minion 2 :" +  m2.vie + " Etat : " + m2.state);
+            }
+
+            System.out.println("Combat terminé en " + nbT + " tours.");
+        }
+
     public void CombatAlea2(Minion ennemi) {
 
     //Verif des zombies
 
-        if(this.zombie ==true || ennemi.zombie == true){
-            this.zombie = true;
+        if(this.zombie){
             this.state = State.Zombie;
             ennemi.zombie = true;
             ennemi.state = State.Zombie;
-        }
+        }else if(ennemi.zombie){
+            this.zombie =true;
+            this.state = State.Zombie;
+            ennemi.state = State.Zombie;
+        }else if(this.zombie && ennemi.zombie){
+            System.out.println("Combat de zombies ! ");
+            int rnd = (int) Math.floor(Math.random()*2);
+            if(rnd == 0 ){
+                this.state = State.Mort;
+            }else ennemi.state = State.Mort ;
+            return;
+        }else
 
     //Verif de la possibilité du combat
 
     switch (this.state) {
 
         case Mort:
+            System.out.println("Attaque de la part d'un zombie");
             break;
         case Blesse:
             if (ennemi.state == State.EnForme || ennemi.state == State.Fatigue && ennemi.puissance >= 2*this.puissance) {
                 this.vie = 0;
                 this.state = State.Mort;
+            }
+            else if(ennemi.state == State.Blesse){
+                if(this.puissance >= ennemi.puissance){
+                    ennemi.vie = 0;
+                    ennemi.state = State.Mort;
+                }else{
+                    this.vie = 0;
+                    this.state = State.Mort;
+                }
+            } else if (ennemi.state == State.Fatigue && ennemi.puissance >= 2*this.puissance) {
+                this.vie = 0;
+                this.state = State.Mort;
+            } else if (ennemi.state == State.Fatigue && ennemi.puissance >= this.puissance) {
+                this.vie = (int) Math.floor(this.vie - ennemi.puissance * 5);
+                this.CheckVie();
+            } else if (ennemi.state == State.Fatigue && this.puissance >= ennemi.puissance) {
+                ennemi.vie = (int) Math.floor(ennemi.vie - this.puissance * 5);
+                ennemi.CheckVie();
+            } else {
+                ennemi.vie = 0;
+                ennemi.state = State.Mort;
             }
             break;
         case Fatigue:
@@ -84,6 +131,7 @@ public class Minion {
         case EnForme:
             switch (ennemi.state) {
                 case Mort:
+                    System.out.println("Attaque sur un zombie");
                     break;
                 case Blesse:
                     if(this.puissance >= 2* ennemi.puissance ){
